@@ -1,0 +1,220 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef signed long long int ll;
+ll mod=1000000007;
+
+bool sortcolPair(const pair<int,int>& p1, pair<int,int>& p2) {
+    return p1.first < p2.first;
+} 
+
+void sortPairArray(vector<pair<int,int>>& arr) {
+    sort(arr.begin(), arr.end(), sortcolPair);
+}
+
+
+bool sortcolVector(const vector<int>& v1, const vector<int>& v2) {
+    return v1[0] < v2[0];
+} 
+
+void sort2DArray(vector<vector<int>>& arr) {
+    sort(arr.begin(), arr.end(), sortcolVector);
+}
+
+void reverseArray(vector<ll>& arr) {
+    ll i=0;
+    ll j=arr.size()-1;
+    while(i<j) {
+        arr[i]=arr[i]+arr[j];
+        arr[j]=arr[i]-arr[j];
+        arr[i]=arr[i]-arr[j];
+        i++; j--;
+    }
+}
+
+void sortArray(vector<int>& arr) {
+    sort(arr.begin(), arr.end());
+}
+
+string integerToString(ll num) {
+    stringstream ss;
+    ss << num;
+    string str = ss.str();
+    return str;
+}
+
+string getSubstring(string& str,ll k) {
+    return str.substr(0,k);
+}
+
+ll stringToInteger(string& str) {
+    stringstream geek(str);
+    ll x = 0;
+    geek >> x;
+    return x;
+}
+
+void deleteAtIndex(string& str,ll ind) {
+    str.erase(ind,1);
+}
+
+string characterToString(char ch) {
+    string s(1, ch);
+    return s;
+}
+
+void printPairArray(vector<pair<int,int>>& arr) {
+    ll n=arr.size();
+    for(auto p:arr)
+        cout << p.first << " " << p.second << endl;
+    cout << endl;
+}
+
+void print2DArray(vector<vector<int>>& arr) {
+    ll n=arr.size();
+    for(auto p:arr)
+        cout << p[0] << " " << p[1] << endl;
+    cout << endl;
+}
+
+void printArray(vector<ll>& arr) {
+    for(auto x: arr)
+        cout << x << " ";
+    cout << endl;
+}
+
+void createAdjacencyMatrix(vector<vector<ll>>& arr,vector<ll> adj[]) {
+    // 0 Based indexing
+    for(auto x:arr) {
+        adj[x[0]].push_back(x[1]);
+        adj[x[1]].push_back(x[0]);
+    }
+}
+
+void printAdjacencyMatrix(vector<ll> arr[],ll v) {
+    for(int i=1;i<=v;i++) {
+        cout << i << " -> ";
+        for(int j=0;j<arr[i].size();j++) {
+            cout << arr[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+// vector<vector<ll>> arr;
+// vector<ll> adj[v+1];
+// createAdjacencyMatrix(arr,adj);
+// printAdjacencyMatrix(adj,v)
+
+void dfs(vector<ll> adj[], int u, vector<bool>& vis) {
+    vis[u]=true;
+    cout << u << " ";
+    for(auto v:adj[u]) {
+        if(!vis[v])
+            dfs(adj, v, vis);
+    }
+}
+
+ll createSubstring(string& curr,string& str,int i) {
+    ll x=0;
+    if(i==str.length()) {
+        // cout << curr << endl;
+        if(curr.length()>0) {
+            x=stringToInteger(curr);
+            return (x%7==0) ? 1:0;
+        } else {
+            return 0;
+        }
+    }
+    string temp=curr+characterToString(str[i]);
+    ll x2=createSubstring(temp,str,i+1);
+    ll x1=createSubstring(curr,str,i+1);
+    return x1+x2;
+}
+
+void printBinary(int n) {
+    int binaryNum[32];
+    int i = 0;
+    while (n > 0) {
+        binaryNum[i] = n % 2;
+        n = n / 2;
+        i++;
+    }
+    for (int j = i - 1; j >= 0; j--)
+        cout << binaryNum[j];
+}
+
+
+//                <-- functions -->
+// sortPairArray(arr)
+// sort2DArray(arr)
+// sortArray(arr)
+// reverseArray(arr)
+// integerToString(num)
+// getSubString(str,k)
+// stringToInteger(str)
+// deleteAtIndex(str,ind)
+// characterToString(ch)
+// printPairArray(arr)
+// print2DArray(arr)
+// printArray(arr)
+// createAdjacencyMatrix(arr,adj)
+// printAdjacencyMatrix(adj,v)
+// dfs(adj,1,vis);
+
+ll countDigit(ll n) {
+    return floor(log10(n) + 1);
+}
+
+ll subsequenceDivisibleByN(vector<ll>& str, ll idx, ll rem,
+                           vector<vector<ll>>& dp)
+{
+    // If last character reached
+    if (idx == str.size())
+        return (rem == 0)? 1 : 0;
+        
+    if(dp[idx][rem]!=-1)
+        return dp[idx][rem]%mod;
+
+    ll ans = 0;
+
+    // we exclude it, thus remainder
+    // remains the same
+
+    ll temp = countDigit(str[idx]);
+    temp = pow(10, temp);
+  
+    ans = ((ans%mod)+(subsequenceDivisibleByN(str, idx+1, rem, dp)%mod))%mod;
+
+    // we include it and thus new remainder
+    ans = ((ans%mod)+(subsequenceDivisibleByN(str, idx+1, (rem*temp + str[idx])%7, dp)%mod))%mod;
+
+    return dp[idx][rem] = ans%mod;   
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    #ifndef ONLINE_JUDGE
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+    #endif
+    
+    ll t;
+    cin >> t;
+    while((t--)>0) {
+        // cout << "Hello" << endl;
+        ll n,x;
+        cin >> n;
+        vector<ll> arr(n,0); 
+        for(ll i=0;i<n;i++) {
+            cin >> x;
+            arr[i]=x;
+        }
+        vector<vector<ll>> dp(n+1,vector<ll>(7,-1));
+        cout << subsequenceDivisibleByN(arr, 0, 0, dp)-1;
+        cout << endl;
+    }
+    return 0;
+}
